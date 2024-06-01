@@ -6,6 +6,8 @@ RUN ./build.sh
 
 FROM alpine:3.20 AS runtime
 RUN apk add --no-cache libc6-compat
+RUN adduser -D web
+USER web
 WORKDIR /app
 COPY --from=build /build/out/app .
 EXPOSE 8080
