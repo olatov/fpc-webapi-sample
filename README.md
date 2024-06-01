@@ -1,6 +1,6 @@
 ## Steps to run
 
-1. Build an run using docker compose:
+1. Build and run using docker compose:
 
 	`$ docker compose up -d`
 	
