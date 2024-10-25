@@ -33,8 +33,8 @@ var
 begin
     Data := TJsonObject.Create();
     try
-        CreateGuid(RequestId);
-        Data.Strings['requestId'] := GuidToString(RequestId);
+        RequestId := TGuid.NewGuid();
+        Data.Strings['requestId'] := RequestId.ToString(true).ToLower();
         Data.Strings['dateTime'] := DateToIso8601(Now());
         Data.Booleans['success'] := true;
         Data.Integers['version'] := 1;
