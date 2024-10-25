@@ -1,4 +1,4 @@
-FROM freepascal/fpc:3.2.2-full AS build
+FROM freepascal/fpc:3.2.2-buster-full AS build
 WORKDIR /build
 COPY src ./src
 COPY build.sh .
