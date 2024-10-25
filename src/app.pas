@@ -6,61 +6,65 @@ uses
   {$ifdef UNIX}
   cthreads, cmem,
   {$endif}
-  fphttpapp, httpdefs, httproute,
-  fpjson,
-  SysUtils;
+  DateUtils,
+  SysUtils,
+  FPHttpApp, HttpDefs, HttpRoute,
+  FPJson;
 
 const
     DefaultPort = 8080;
 
 var
-    port: integer = DefaultPort;
+    Port: Integer = DefaultPort;
 
-procedure HomePageRoute(request: TRequest; response: TResponse);
+procedure HomePageRoute(Request: TRequest; Response: TResponse);
 begin
-    response.Content := 
+    Response.Content :=
         '<!DOCTYPE html><html><body>' +
         '<h1>Hello!</h1>' + 
         '<p>See the API under <a href="/api">/api</a></p>' +
         '</body></html>';
 end;
 
-procedure ApiEndpointRoute(request: TRequest; response: TResponse);
+procedure ApiEndpointRoute(Request: TRequest; Response: TResponse);
 var
-    data: TJsonObject;
-    requestId: TGuid;
+    Data: TJsonObject;
+    RequestId: TGuid;
 begin
-    data := TJsonObject.Create();
+    Data := TJsonObject.Create();
+    try
+        CreateGuid(RequestId);
+        Data.Strings['requestId'] := GuidToString(RequestId);
+        Data.Strings['dateTime'] := DateToIso8601(Now());
+        Data.Booleans['success'] := true;
+        Data.Integers['version'] := 1;
 
-    CreateGUID(requestId);
-    data.Strings['requestId'] := GUIDToString(requestId);
-    data.Strings['dateTime'] := FormatDateTime('yyyy-mm-dd"T"hh:nn:ss', Now);
-    data.Booleans['success'] := true;
-    data.Integers['version'] := 1;
-
-    response.Content := data.AsJson;  // change to data.FormatJson for pretty JSON
-    response.ContentType := 'application/json';
-
-    data.Free();
+        Response.Content := Data.AsJson;  // change to data.FormatJson for pretty JSON
+        Response.ContentType := 'application/json';
+    finally
+        FreeAndNil(Data);
+    end;
 end;
 
 
 begin
     Writeln('Starting...');
 
-    HTTPRouter.RegisterRoute('/', @HomePageRoute);
-    HTTPRouter.RegisterRoute('/api', @ApiEndpointRoute);
+    HttpRouter.RegisterRoute('/', @HomePageRoute);
+    HttpRouter.RegisterRoute('/api', @ApiEndpointRoute);
 
     if ParamCount > 0 then
-        port := StrToInt(ParamStr(1));
+        Port := StrToInt(ParamStr(1));
 
-    Application.Port := port;
+    Application.Port := Port;
     Application.Threaded := true;
 
     Application.Initialize();
 
-    Writeln('Listening port ' + IntToStr(port));
+    Writeln('Listening port ', Port);
     // Application.QueueSize := 50;
+
+    Flush(Output);  // Force the above Writelns to print out
 
     Application.Run();
 end.
