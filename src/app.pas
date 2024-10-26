@@ -20,7 +20,7 @@ var
 procedure HomePageRoute(Request: TRequest; Response: TResponse);
 begin
     Response.Content :=
-        '<!DOCTYPE html><html><body>' +
+        '<!DOCTYPE html><html lang="en"><body>' +
         '<h1>Hello!</h1>' + 
         '<p>See the API under <a href="/api">/api</a></p>' +
         '</body></html>';
