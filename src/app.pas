@@ -46,7 +46,6 @@ begin
     end;
 end;
 
-
 begin
     Writeln('Starting...');
 
